@@ -11,7 +11,8 @@
 
 #endif
 
-bool w_init_server(IPV ipVersion, HTTPV httpVersion, unsigned int port);
+bool w_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned int port);
+void w_delete_server(Server* server);
 
 // -----------------------
 // | GNU/LINUX FUNCTIONS |
@@ -21,6 +22,7 @@ bool w_init_server(IPV ipVersion, HTTPV httpVersion, unsigned int port);
 
 #endif
 
-bool l_init_server(IPV ipVersion, HTTPV httpVersion, unsigned int port);
+bool l_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned int port);
+void l_delete_server(Server* server);
 
 #endif

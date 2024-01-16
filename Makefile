@@ -24,7 +24,7 @@ linux: $(SOURCES_LINUX)
 # ---------------------
 
 windows: $(SOURCES_WINDOWS)
-	x86_64-w64-mingw32-gcc -D WINDOWS $(CFLAGS) -o $(EXECUTABLE_WINDOWS) $^
+	x86_64-w64-mingw32-gcc -D WINDOWS $(CFLAGS) -o $(EXECUTABLE_WINDOWS) $^ -lws2_32
 clean:
 	rm -f $(EXECUTABLE_LINUX) $(EXECUTABLE_WINDOWS)
 
