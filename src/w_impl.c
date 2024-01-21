@@ -8,8 +8,8 @@
 #include "public_interface.h"
 #include "logs.h"
 
-bool w_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned int port) {
-    log_info("init server for GNU/Linux");
+bool w_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned int port, int backlog) {
+    log_info("starting server for GNU/Linux");
 
     // Initiate Winsock
     WSADATA wsaData;
@@ -50,6 +50,11 @@ bool w_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned 
         return false;
     }
 
+    if (listen(server->server_socket, backlog) == -1) {
+        log_error("Server couldn't start listening");
+        return false;
+    }
+
     return true;
 };
 
@@ -57,6 +62,17 @@ void w_delete_server(Server* server) {
     log_info("delete server for Windows");
     closesocket(server->server_socket);
     WSACleanup();
+}
+
+bool w_get_request(Request* request, Server* server, Client* client) {
+    if ((client->client_socket = accept(server->server_socket, (struct sockaddr*)&client->client_address, &client->client_address_length))) {
+        log_error("Couldn't accept request.");
+        return false;
+    }
+
+    i_parse_request("haha", request);
+    
+    return true;
 }
 
 #endif

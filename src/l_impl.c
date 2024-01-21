@@ -6,14 +6,15 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <string.h>
 #include "public_interface.h"
 #include "impl.h"
 #include "logs.h"
 
-bool l_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned int port) {
-    log_info("init server for GNU/Linux");
+bool l_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned int port, int backlog) {
+    log_info("starting server for GNU/Linux");
 
     // Create a socket
     if (httpVersion == HTTP)
@@ -44,6 +45,11 @@ bool l_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned 
         return false;
     }
 
+    if (listen(server->server_socket, backlog) == -1) {
+        log_error("Server couldn't start listening");
+        return false;
+    }
+
     return true;
 }
 
@@ -52,4 +58,22 @@ void l_delete_server(Server* server) {
     close(server->server_socket);
 }
 
-#endif
+bool l_get_request(Request* request, Server* server, Client* client) {
+    if ((client->client_socket = accept(server->server_socket, (struct sockaddr*)&client->client_address, &client->client_address_length)) == -1) {
+        log_error("Couldn't accept request.");
+        return false;
+    }
+    log_info(request->raw);
+
+    int bytes_recieved = recv(client->client_socket, request->raw, request->raw_size, 0);
+    if (bytes_recieved == -1) {
+        log_error("Couldn't recieve data.");
+        return false;
+    }
+
+    i_parse_request("haha", request);
+    
+    return true;
+}
+
+ #endif
