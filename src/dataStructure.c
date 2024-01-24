@@ -1,14 +1,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "dataStructure.h"
 #include "logs.h"
+
+
+// -----------------
+// | DYNAMIC ARRAY |
+// -----------------
 
 bool createDynamicArray(DynamicArray* thisArray, size_t elementSize) {
     thisArray->buffer = malloc(elementSize * 4);
     if (thisArray->buffer == NULL)
         return false;
+
 
     thisArray->allocated = elementSize * 4;
     thisArray->used = 0;
@@ -105,4 +112,56 @@ void* getFromDynamicArray(DynamicArray* thisArray, size_t index) {
         return NULL;
     }
     return &((char*)thisArray->buffer)[index * thisArray->elementSize];
+}
+
+// ----------
+// | STRING |
+// ----------
+
+bool create_string(String* string) {
+    return createDynamicArray(string, sizeof(char));
+}
+
+void destroy_string(String* string) {
+    destroyDynamicArray(string);
+}
+
+void copy_string(String* string, char* destination, size_t length) {
+    memmove(destination, string->buffer, string->used);    
+}
+
+size_t string_lenght(String* string) {
+    return string->used;
+}
+
+bool add_char(String* string, char character) {
+    return addToDynamicArray(string, &character);
+}
+
+bool add_string(String* string, char* source, size_t length) {
+    return addMultipleToDynamicArray(string, source, length);
+}
+
+
+// ---------------
+// | STRING VIEW |
+// ---------------
+
+
+
+
+void create_string_view(StringView* string_view, char* start, char* end) {
+    string_view->start = start;
+    string_view->length = end - start;
+}
+
+void print_string_view(StringView* string_view) {
+    write(1, string_view->start, string_view->length);
+}
+
+void copy_string_view(StringView* string_view, void* destination) {
+    memmove(destination, string_view->start, string_view->length);
+}
+size_t string_view_length(StringView* string_view) {
+    return string_view->length;
 }

@@ -1,5 +1,9 @@
-//#define LINUX
+// #define LINUX
 #ifdef LINUX
+
+
+// delete this !!!!!
+#include <stdio.h>
 
 #include <stdbool.h>
 #include <arpa/inet.h>
@@ -25,6 +29,12 @@ bool l_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned 
 
     if (server->server_socket == -1) {
         log_error("Couldn't create server socket.");
+        return false;
+    }
+
+    int reuse = 1;
+    if (setsockopt(server->server_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0) {
+        log_error("Couldn't set setsockopt(SO_REUSEADDR).");
         return false;
     }
 
@@ -59,19 +69,30 @@ void l_delete_server(Server* server) {
 }
 
 bool l_get_request(Request* request, Server* server, Client* client) {
-    if ((client->client_socket = accept(server->server_socket, (struct sockaddr*)&client->client_address, &client->client_address_length)) == -1) {
-        log_error("Couldn't accept request.");
-        return false;
+   
+    if ((client->client_socket = accept(server->server_socket, (struct sockaddr *)&client->client_address, &client->client_address_length)) == -1) {
+            log_error("Couldn't accept request.");
+            exit(EXIT_FAILURE);
     }
+    printf("Connection accepted from %s:%d\n", inet_ntoa(client->client_address.sin_addr), ntohs(client->client_address.sin_port));
+
     log_info(request->raw);
 
     int bytes_recieved = recv(client->client_socket, request->raw, request->raw_size, 0);
+
     if (bytes_recieved == -1) {
         log_error("Couldn't recieve data.");
         return false;
     }
 
-    i_parse_request("haha", request);
+    i_parse_request(request);
+    i_preview_request(request);
+
+    // delete this !!!!!
+    const char* response = "lol man";
+    size_t responseLength = strlen(response);
+    send(client->client_socket, response, responseLength, 0); 
+    close(client->client_socket);
     
     return true;
 }

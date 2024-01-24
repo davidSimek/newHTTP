@@ -37,7 +37,8 @@ void l_init_client(Client* client);
 // | INDEPENDENT ON OS |
 // ---------------------
 
-void i_parse_request(char* data, Request* request);
+void i_parse_request(Request* request);
 void i_delete_request(Request* request);
+void i_preview_request(Request* request);
 
 #endif

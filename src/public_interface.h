@@ -70,13 +70,14 @@ typedef struct {
 typedef struct {        // ALLOCATED 
     char* raw;          // yes
     size_t raw_size;    // no
-    char* method;       // no 
+    char* method;       // yes
     char* host;         // yes
     char* path;         // yes
     char* http_version; // no
     char** headers;     // yes (in one block -> <frst\0scnd\0thrd\0>)
     int headers_count;  // no
     char* body;         // yes
+    bool is_valid;      // no
 } Request;
 
 // -------------

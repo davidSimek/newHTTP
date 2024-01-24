@@ -31,6 +31,14 @@ bool w_init_server(Server* server, Ip_v ipVersion, Http_v httpVersion, unsigned 
         return false;
     }
 
+    int reuse = 1;
+    if (setsockopt(server->server_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) == SOCKET_ERROR) {
+        perror("Couldn't set setsockopt(SO_REUSEADDR).");
+        closesocket(server->server_socket);
+        WSACleanup();
+        return false;
+    }
+
     // Bind the socket
     if (httpVersion == HTTP) {
         server->server_address.sin_family = AF_INET;
@@ -70,7 +78,7 @@ bool w_get_request(Request* request, Server* server, Client* client) {
         return false;
     }
 
-    i_parse_request("haha", request);
+    i_parse_request(request);
     
     return true;
 }

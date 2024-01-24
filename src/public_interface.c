@@ -35,7 +35,8 @@ bool init_request(Request* request, size_t max_request_size) {
 }
 
 bool get_request(Request* request, Server* server, Client* client) {
-    l_get_request(request, server, client);
+    log_info("hey");
+    return l_get_request(request, server, client);
 }
 
 void delete_request(Request* request) {
